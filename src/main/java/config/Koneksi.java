@@ -14,7 +14,7 @@ public class Koneksi {
             return DriverManager.getConnection(
                 "jdbc:postgresql://localhost:5432/cafe_kopi",
                 "postgres",
-                "121334"
+                "12345678"
             );
         } catch (Exception e) {
             e.printStackTrace();

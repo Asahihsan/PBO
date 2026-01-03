@@ -428,7 +428,7 @@
 
         <!-- Our Values -->
         <div class="about-section">
-            <h2>💎 Nilai-Nilai Kami</h2>
+            <h2>💎 Nilai-Nilai Kami MANGEA 00</h2>
             <div class="values-grid">
                 <div class="value-item">
                     <div class="value-icon">⭐</div>
