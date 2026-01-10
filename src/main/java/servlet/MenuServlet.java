@@ -1,7 +1,3 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package servlet;
 
 import config.Koneksi;
@@ -20,20 +16,36 @@ import model.Menu;
 @WebServlet("/menu")
 public class MenuServlet extends HttpServlet {
 
+    @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse res)
             throws ServletException, IOException {
+
         List<Menu> list = new ArrayList<>();
+
         try {
             Connection c = Koneksi.getConnection();
-            ResultSet rs = c.createStatement().executeQuery("SELECT * FROM menu");
+
+            // Query dengan JOIN untuk ambil nama kategori
+            String query = "SELECT m.id_menu, m.nama_menu, m.harga, m.gambar, m.id_kategori, k.nama_kategori "
+                    + "FROM menu m "
+                    + "JOIN kategori k ON m.id_kategori = k.id_kategori "
+                    + "ORDER BY m.id_menu";
+
+            ResultSet rs = c.createStatement().executeQuery(query);
+
             while (rs.next()) {
                 Menu m = new Menu();
                 m.setId(rs.getInt("id_menu"));
                 m.setNama(rs.getString("nama_menu"));
                 m.setHarga(rs.getInt("harga"));
                 m.setGambar(rs.getString("gambar"));
+                m.setIdKategori(rs.getInt("id_kategori"));
+                m.setNamaKategori(rs.getString("nama_kategori"));
                 list.add(m);
             }
+
+            rs.close();
+
         } catch (Exception e) {
             e.printStackTrace();
         }

@@ -375,23 +375,7 @@
     </style>
 </head>
 <body>
-    <!-- Navigation -->
-    <nav>
-        <div class="container">
-            <a href="index.jsp" class="logo">Beans & Brew</a>
-            <ul>
-                <li><a href="index.jsp">Home</a></li>
-                <li><a href="menu">Menu</a></li>
-                <li class="cart-link">
-                    <a href="pesanan.jsp">
-                        🛒 Pesanan
-                        <span class="cart-badge" id="cartBadge">0</span>
-                    </a>
-                </li>
-                <li><a href="about.jsp">About</a></li>
-            </ul>
-        </div>
-    </nav>
+    <%@ include file="navbar-component.jsp" %>
 
     <!-- Hero Section -->
     <div class="hero">

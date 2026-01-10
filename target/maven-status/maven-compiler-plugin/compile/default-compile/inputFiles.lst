@@ -1,6 +1,13 @@
 C:\Users\kenas\OneDrive\Documents\NetBeansProjects\CafeKopi\src\main\java\config\Koneksi.java
 C:\Users\kenas\OneDrive\Documents\NetBeansProjects\CafeKopi\src\main\java\dev\asahi\cafekopi\JakartaRestConfiguration.java
 C:\Users\kenas\OneDrive\Documents\NetBeansProjects\CafeKopi\src\main\java\dev\asahi\cafekopi\resources\JakartaEE11Resource.java
+C:\Users\kenas\OneDrive\Documents\NetBeansProjects\CafeKopi\src\main\java\model\Kategori.java
 C:\Users\kenas\OneDrive\Documents\NetBeansProjects\CafeKopi\src\main\java\model\Menu.java
+C:\Users\kenas\OneDrive\Documents\NetBeansProjects\CafeKopi\src\main\java\model\User.java
+C:\Users\kenas\OneDrive\Documents\NetBeansProjects\CafeKopi\src\main\java\servlet\CheckoutServlet.java
+C:\Users\kenas\OneDrive\Documents\NetBeansProjects\CafeKopi\src\main\java\servlet\LoginServlet.java
+C:\Users\kenas\OneDrive\Documents\NetBeansProjects\CafeKopi\src\main\java\servlet\LogoutServlet.java
 C:\Users\kenas\OneDrive\Documents\NetBeansProjects\CafeKopi\src\main\java\servlet\MenuServlet.java
 C:\Users\kenas\OneDrive\Documents\NetBeansProjects\CafeKopi\src\main\java\servlet\PesananServlet.java
+C:\Users\kenas\OneDrive\Documents\NetBeansProjects\CafeKopi\src\main\java\servlet\RegisterServlet.java
+C:\Users\kenas\OneDrive\Documents\NetBeansProjects\CafeKopi\src\main\java\servlet\UpdateStatusServlet.java
