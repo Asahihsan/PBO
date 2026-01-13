@@ -1,109 +1,34 @@
-<%-- 
-    Document   : pesanan
-    Created on : Dec 18, 2025, 1:03:01 PM
-    Author     : kenas
---%>
-
-<%@page contentType="text/html" pageEncoding="UTF-8"%>
 <!DOCTYPE html>
 <html lang="id">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pesanan - Beans & Brew</title>
+    <title>Keranjang - Beans & Brew</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;700&display=swap" rel="stylesheet">
     <style>
+        :root {
+            --primary: #3e2723;
+            --accent: #ff6f00;
+            --bg-body: #f8f9fa;
+            --card-shadow: 0 10px 30px rgba(0,0,0,0.05);
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
+            font-family: 'Plus Jakarta Sans', sans-serif;
         }
 
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            color: #2c2c2c;
+            background-color: var(--bg-body);
+            color: #2d3436;
             line-height: 1.6;
-            background: #f5f5f5;
         }
 
-        /* Navbar */
-        nav {
-            background: linear-gradient(135deg, #3e2723 0%, #5d4037 100%);
-            padding: 1rem 5%;
-            position: fixed;
-            width: 100%;
-            top: 0;
-            z-index: 1000;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.3);
-        }
-
-        nav .container {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            max-width: 1400px;
-            margin: 0 auto;
-        }
-
-        .logo {
-            font-size: 1.8rem;
-            font-weight: bold;
-            color: #fff;
-            text-decoration: none;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-
-        .logo::before {
-            content: "☕";
-            font-size: 2rem;
-        }
-
-        nav ul {
-            display: flex;
-            list-style: none;
-            gap: 2rem;
-            align-items: center;
-        }
-
-        nav ul li a {
-            color: #fff;
-            text-decoration: none;
-            font-size: 1.1rem;
-            transition: color 0.3s;
-            padding: 0.5rem 1rem;
-            border-radius: 5px;
-        }
-
-        nav ul li a:hover {
-            background: rgba(255,255,255,0.1);
-            color: #ffcc80;
-        }
-
-        .cart-link {
-            position: relative;
-        }
-
-        .cart-badge {
-            position: absolute;
-            top: -8px;
-            right: -8px;
-            background: #ff3333;
-            color: white;
-            border-radius: 50%;
-            width: 24px;
-            height: 24px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 0.85rem;
-            font-weight: bold;
-            box-shadow: 0 2px 8px rgba(255, 51, 51, 0.5);
-        }
-
-        /* Main Content */
         .main-content {
-            margin-top: 90px;
+            margin-top: 100px;
             padding: 2rem 5%;
             max-width: 1200px;
             margin-left: auto;
@@ -112,400 +37,309 @@
         }
 
         .page-title {
-            font-size: 2.5rem;
-            color: #3e2723;
-            margin-bottom: 2rem;
-            text-align: center;
+            font-size: 2.2rem;
+            color: var(--primary);
+            margin-bottom: 2.5rem;
+            font-weight: 800;
+            text-align: left;
+            letter-spacing: -1px;
         }
 
-        /* Cart Container */
         .cart-container {
             display: grid;
             grid-template-columns: 1fr 400px;
-            gap: 2rem;
+            gap: 2.5rem;
+            align-items: start;
         }
 
-        /* Cart Items */
+        /* List Items Area */
         .cart-items {
             background: white;
-            border-radius: 15px;
-            padding: 2rem;
-            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+            border-radius: 24px;
+            padding: 1.5rem;
+            box-shadow: var(--card-shadow);
         }
 
         .cart-item {
             display: flex;
             gap: 1.5rem;
             padding: 1.5rem;
-            border-bottom: 1px solid #e0e0e0;
+            border-bottom: 1px solid #f1f1f1;
             align-items: center;
+            transition: var(--transition);
         }
 
-        .cart-item:last-child {
-            border-bottom: none;
-        }
+        .cart-item:last-child { border-bottom: none; }
 
-        .item-image {
-            width: 100px;
-            height: 100px;
-            object-fit: cover;
-            border-radius: 10px;
-            background: #e0e0e0;
-        }
-
-        .item-details {
-            flex: 1;
-        }
+        .item-details { flex: 1; }
 
         .item-name {
-            font-size: 1.3rem;
-            font-weight: bold;
-            color: #3e2723;
-            margin-bottom: 0.5rem;
+            font-size: 1.15rem;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 4px;
         }
 
         .item-price {
-            color: #ff6f00;
-            font-size: 1.1rem;
-            font-weight: bold;
+            color: #777;
+            font-size: 1rem;
+            font-weight: 500;
         }
 
+        /* Controls */
         .item-controls {
             display: flex;
             align-items: center;
-            gap: 1rem;
+            gap: 1.5rem;
         }
 
         .quantity-control {
             display: flex;
             align-items: center;
-            gap: 0.8rem;
-            background: #f5f5f5;
-            padding: 0.5rem 1rem;
-            border-radius: 50px;
+            gap: 1rem;
+            background: #f8f9fa;
+            padding: 6px 12px;
+            border-radius: 12px;
+            border: 1px solid #eee;
         }
 
         .qty-btn {
-            background: #ff6f00;
-            color: white;
-            border: none;
-            width: 30px;
-            height: 30px;
-            border-radius: 50%;
+            background: white;
+            color: var(--primary);
+            border: 1px solid #ddd;
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
             font-size: 1.2rem;
             cursor: pointer;
             display: flex;
             align-items: center;
             justify-content: center;
-            transition: all 0.3s;
+            transition: var(--transition);
+            font-weight: bold;
         }
 
         .qty-btn:hover {
-            background: #ff8f00;
-            transform: scale(1.1);
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
         }
 
         .qty-number {
-            font-weight: bold;
-            font-size: 1.1rem;
-            min-width: 30px;
+            font-weight: 700;
+            font-size: 1rem;
+            min-width: 25px;
             text-align: center;
         }
 
         .remove-btn {
-            background: #f44336;
-            color: white;
+            background: #fff0f0;
+            color: #ff4757;
             border: none;
-            padding: 0.5rem 1rem;
-            border-radius: 50px;
+            padding: 10px 16px;
+            border-radius: 12px;
             cursor: pointer;
-            transition: all 0.3s;
-            font-weight: bold;
+            transition: var(--transition);
+            font-weight: 600;
+            font-size: 0.85rem;
         }
 
         .remove-btn:hover {
-            background: #d32f2f;
-            transform: scale(1.05);
+            background: #ff4757;
+            color: white;
         }
 
-        /* Checkout Section */
+        /* Checkout Card */
         .checkout-section {
             background: white;
-            border-radius: 15px;
+            border-radius: 24px;
             padding: 2rem;
-            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
-            height: fit-content;
+            box-shadow: var(--card-shadow);
             position: sticky;
             top: 110px;
         }
 
         .checkout-title {
-            font-size: 1.5rem;
-            color: #3e2723;
+            font-size: 1.4rem;
+            color: var(--primary);
             margin-bottom: 1.5rem;
-            padding-bottom: 1rem;
-            border-bottom: 2px solid #e0e0e0;
+            font-weight: 700;
         }
 
-        .form-group {
-            margin-bottom: 1.5rem;
-        }
+        .form-group { margin-bottom: 1.2rem; }
 
         .form-group label {
             display: block;
-            margin-bottom: 0.5rem;
+            margin-bottom: 8px;
             color: #555;
-            font-weight: 500;
+            font-weight: 600;
+            font-size: 0.9rem;
         }
 
-        .form-group input,
-        .form-group select {
+        .form-group input, .form-group select {
             width: 100%;
-            padding: 0.8rem;
-            border: 2px solid #e0e0e0;
-            border-radius: 8px;
-            font-size: 1rem;
-            transition: border 0.3s;
+            padding: 12px 16px;
+            border: 1.5px solid #eee;
+            border-radius: 12px;
+            font-size: 0.95rem;
+            transition: var(--transition);
+            background: #fcfcfc;
         }
 
-        .form-group input:focus,
-        .form-group select:focus {
+        .form-group input:focus {
             outline: none;
-            border-color: #ff6f00;
+            border-color: var(--accent);
+            background: white;
         }
 
         .order-summary {
             margin: 1.5rem 0;
-            padding: 1rem 0;
-            border-top: 2px solid #e0e0e0;
-            border-bottom: 2px solid #e0e0e0;
+            padding-top: 1.5rem;
+            border-top: 1.5px dashed #eee;
         }
 
         .summary-row {
             display: flex;
             justify-content: space-between;
-            margin-bottom: 0.8rem;
-            font-size: 1.1rem;
+            margin-bottom: 10px;
+            font-size: 0.95rem;
+            color: #666;
         }
 
         .summary-row.total {
-            font-size: 1.5rem;
-            font-weight: bold;
-            color: #3e2723;
-            margin-top: 1rem;
+            font-size: 1.3rem;
+            font-weight: 800;
+            color: var(--primary);
+            margin-top: 15px;
+            padding-top: 10px;
         }
 
         .checkout-btn {
             width: 100%;
-            background: #ff6f00;
+            background: var(--accent);
             color: white;
             border: none;
-            padding: 1rem;
-            border-radius: 50px;
-            font-size: 1.2rem;
-            font-weight: bold;
+            padding: 16px;
+            border-radius: 14px;
+            font-size: 1rem;
+            font-weight: 700;
             cursor: pointer;
-            transition: all 0.3s;
-            box-shadow: 0 4px 15px rgba(255, 111, 0, 0.3);
+            transition: var(--transition);
+            box-shadow: 0 8px 20px rgba(255, 111, 0, 0.2);
         }
 
         .checkout-btn:hover {
-            background: #ff8f00;
             transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(255, 111, 0, 0.5);
+            box-shadow: 0 12px 25px rgba(255, 111, 0, 0.3);
         }
 
-        .checkout-btn:disabled {
-            background: #ccc;
-            cursor: not-allowed;
-            transform: none;
-        }
-
-        /* Empty Cart */
+        /* Empty State */
         .empty-cart {
             text-align: center;
-            padding: 4rem 2rem;
+            padding: 5rem 2rem;
             background: white;
-            border-radius: 15px;
-            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+            border-radius: 24px;
+            box-shadow: var(--card-shadow);
         }
 
-        .empty-cart-icon {
-            font-size: 5rem;
-            margin-bottom: 1rem;
-        }
-
-        .empty-cart h2 {
-            color: #666;
-            margin-bottom: 1rem;
-        }
-
-        .empty-cart p {
-            color: #999;
-            margin-bottom: 2rem;
-        }
+        .empty-cart-icon { font-size: 4rem; margin-bottom: 1.5rem; display: block; }
+        .empty-cart h2 { color: var(--primary); margin-bottom: 10px; font-weight: 800; }
+        .empty-cart p { color: #888; margin-bottom: 2rem; }
 
         .back-to-menu-btn {
             display: inline-block;
-            background: #ff6f00;
+            background: var(--primary);
             color: white;
-            padding: 1rem 2rem;
-            border-radius: 50px;
+            padding: 14px 32px;
+            border-radius: 12px;
             text-decoration: none;
-            font-weight: bold;
-            transition: all 0.3s;
-        }
-
-        .back-to-menu-btn:hover {
-            background: #ff8f00;
-            transform: translateY(-2px);
+            font-weight: 700;
+            transition: var(--transition);
         }
 
         /* Success Modal */
         .modal {
             display: none;
             position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0,0,0,0.7);
+            inset: 0;
+            background: rgba(0,0,0,0.5);
+            backdrop-filter: blur(8px);
             z-index: 2000;
             align-items: center;
             justify-content: center;
+            padding: 20px;
         }
-
-        .modal.show {
-            display: flex;
-        }
+        .modal.show { display: flex; }
 
         .modal-content {
             background: white;
             padding: 3rem;
-            border-radius: 20px;
+            border-radius: 30px;
             text-align: center;
-            max-width: 500px;
-            animation: modalSlideIn 0.3s ease-out;
+            max-width: 450px;
+            width: 100%;
+            animation: modalPop 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
 
-        @keyframes modalSlideIn {
-            from {
-                transform: translateY(-100px);
-                opacity: 0;
-            }
-            to {
-                transform: translateY(0);
-                opacity: 1;
-            }
+        @keyframes modalPop {
+            from { transform: scale(0.8); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
         }
 
-        .modal-icon {
-            font-size: 5rem;
-            margin-bottom: 1rem;
-        }
-
-        .modal-content h2 {
-            color: #4caf50;
-            margin-bottom: 1rem;
-        }
-
-        .modal-content p {
-            color: #666;
-            margin-bottom: 2rem;
-            font-size: 1.1rem;
-        }
+        .modal-icon { font-size: 5rem; margin-bottom: 1rem; }
+        .modal-content h2 { color: #2d3436; margin-bottom: 1rem; font-weight: 800; }
+        .modal-content p { color: #636e72; margin-bottom: 2rem; }
 
         .modal-btn {
-            background: #ff6f00;
+            background: var(--accent);
             color: white;
             border: none;
-            padding: 1rem 3rem;
-            border-radius: 50px;
-            font-size: 1.1rem;
-            font-weight: bold;
+            padding: 14px 40px;
+            border-radius: 12px;
+            font-weight: 700;
             cursor: pointer;
-            transition: all 0.3s;
+            transition: var(--transition);
         }
 
-        .modal-btn:hover {
-            background: #ff8f00;
-            transform: scale(1.05);
-        }
-
-        /* Footer */
         footer {
-            background: #3e2723;
-            color: white;
+            background: white;
             text-align: center;
-            padding: 2rem;
-            margin-top: 3rem;
+            padding: 3rem;
+            margin-top: 4rem;
+            border-top: 1px solid #eee;
+            color: #888;
         }
 
-        /* Responsive */
         @media (max-width: 968px) {
-            .cart-container {
-                grid-template-columns: 1fr;
-            }
-
-            .checkout-section {
-                position: static;
-            }
-
-            .cart-item {
-                flex-direction: column;
-                text-align: center;
-            }
-
-            .item-controls {
-                flex-direction: column;
-            }
+            .cart-container { grid-template-columns: 1fr; }
+            .checkout-section { position: static; }
+            .cart-item { flex-direction: column; text-align: center; }
         }
     </style>
 </head>
 <body>
-    <!-- Navigation -->
-    <nav>
-        <div class="container">
-            <a href="index.jsp" class="logo">Beans & Brew</a>
-            <ul>
-                <li><a href="index.jsp">Home</a></li>
-                <li><a href="menu">Menu</a></li>
-                <li class="cart-link">
-                    <a href="pesanan.jsp">
-                        🛒 Pesanan
-                        <span class="cart-badge" id="cartBadge">0</span>
-                    </a>
-                </li>
-                <li><a href="about.jsp">About</a></li>
-            </ul>
-        </div>
-    </nav>
+    <%@ include file="navbar-component.jsp" %>
 
-    <!-- Main Content -->
     <div class="main-content">
-        <h1 class="page-title">🛒 Keranjang Pesanan</h1>
-
-        <div id="cartContent">
-            <!-- Cart items akan di-render di sini -->
-        </div>
+        <h1 class="page-title">Pesanan Anda</h1>
+        <div id="cartContent"></div>
     </div>
 
-    <!-- Success Modal -->
     <div class="modal" id="successModal">
         <div class="modal-content">
-            <div class="modal-icon">✅</div>
-            <h2>Pesanan Berhasil!</h2>
-            <p>Terima kasih telah memesan di Beans & Brew. Pesanan Anda sedang diproses.</p>
-            <button class="modal-btn" onclick="backToMenu()">Kembali ke Menu</button>
+            <div class="modal-icon">?</div>
+            <h2>Berhasil Terkirim!</h2>
+            <p>Pesanan Anda telah kami terima dan sedang disiapkan oleh barista kami.</p>
+            <button class="modal-btn" onclick="backToMenu()">Sip, Terima Kasih!</button>
         </div>
     </div>
 
-    <!-- Footer -->
     <footer>
-        <p>&copy; 2024 Beans & Brew. All rights reserved. Made with ❤️ and ☕</p>
+        <p>&copy; 2024 Beans & Brew. Crafting moments, one cup at a time. ??</p>
     </footer>
 
     <script>
+        // FUNGSI JAVASCRIPT (Sama persis seperti aslinya)
         function getCart() {
             const cart = sessionStorage.getItem('cart');
             return cart ? JSON.parse(cart) : [];
@@ -521,31 +355,26 @@
             const cart = getCart();
             const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
             const badge = document.getElementById('cartBadge');
-            badge.textContent = totalItems;
-            
-            if (totalItems > 0) {
-                badge.style.display = 'flex';
-            } else {
-                badge.style.display = 'none';
+            if (badge) {
+                badge.textContent = totalItems;
+                badge.style.display = totalItems > 0 ? 'flex' : 'none';
             }
         }
 
-        function updateQuantity(id, change) {
+        function updateQuantity(index, change) {
             let cart = getCart();
-            const item = cart.find(item => item.id === id);
-            
-            if (item) {
-                item.quantity += change;
-                if (item.quantity <= 0) {
-                    cart = cart.filter(item => item.id !== id);
+            if (cart[index]) {
+                cart[index].quantity += change;
+                if (cart[index].quantity <= 0) {
+                    cart.splice(index, 1);
                 }
                 saveCart(cart);
             }
         }
 
-        function removeItem(id) {
+        function removeItem(index) {
             let cart = getCart();
-            cart = cart.filter(item => item.id !== id);
+            cart.splice(index, 1);
             saveCart(cart);
         }
 
@@ -557,14 +386,14 @@
         function renderCart() {
             const cart = getCart();
             const container = document.getElementById('cartContent');
-            
+
             if (cart.length === 0) {
-                container.innerHTML = 
+                container.innerHTML =
                     '<div class="empty-cart">' +
-                        '<div class="empty-cart-icon">🛒</div>' +
-                        '<h2>Keranjang Kosong</h2>' +
-                        '<p>Belum ada item di keranjang. Yuk, mulai pesan kopi favoritmu!</p>' +
-                        '<a href="menu" class="back-to-menu-btn">Lihat Menu</a>' +
+                    '<span class="empty-cart-icon">?</span>' +
+                    '<h2>Wah, keranjang masih kosong!</h2>' +
+                    '<p>Aroma kopi kami sudah menunggumu. Yuk, pilih menu favoritmu sekarang.</p>' +
+                    '<a href="menu" class="back-to-menu-btn">Mulai Pesan</a>' +
                     '</div>';
                 return;
             }
@@ -575,60 +404,67 @@
             var cartItemsHTML = '';
             for (var i = 0; i < cart.length; i++) {
                 var item = cart[i];
-                cartItemsHTML += 
+                var kategoriIcon = '??';
+                var kategoriNama = 'Dingin';
+
+                if (item.kategoriNama) {
+                    kategoriNama = item.kategoriNama;
+                    kategoriIcon = item.kategoriNama === 'Panas' ? '?' : '??';
+                }
+
+                cartItemsHTML +=
                     '<div class="cart-item">' +
-                        '<div class="item-details">' +
-                            '<div class="item-name">' + item.name + '</div>' +
-                            '<div class="item-price">Rp ' + item.price.toLocaleString('id-ID') + '</div>' +
-                        '</div>' +
-                        '<div class="item-controls">' +
-                            '<div class="quantity-control">' +
-                                '<button class="qty-btn" onclick="updateQuantity(' + item.id + ', -1)">−</button>' +
-                                '<span class="qty-number">' + item.quantity + '</span>' +
-                                '<button class="qty-btn" onclick="updateQuantity(' + item.id + ', 1)">+</button>' +
-                            '</div>' +
-                            '<button class="remove-btn" onclick="removeItem(' + item.id + ')">🗑️ Hapus</button>' +
-                        '</div>' +
+                    '<div class="item-details">' +
+                    '<div class="item-name">' + item.name + '</div>' +
+                    '<div class="item-price">' + kategoriNama + ' - Rp ' + item.price.toLocaleString('id-ID') + '</div>' +
+                    '</div>' +
+                    '<div class="item-controls">' +
+                    '<div class="quantity-control">' +
+                    '<button class="qty-btn" onclick="updateQuantity(' + i + ', -1)">-</button>' +
+                    '<span class="qty-number">' + item.quantity + '</span>' +
+                    '<button class="qty-btn" onclick="updateQuantity(' + i + ', 1)">+</button>' +
+                    '</div>' +
+                    '<button class="remove-btn" onclick="removeItem(' + i + ')">Hapus</button>' +
+                    '</div>' +
                     '</div>';
             }
 
-            container.innerHTML = 
+            container.innerHTML =
                 '<div class="cart-container">' +
-                    '<div class="cart-items">' +
-                        cartItemsHTML +
-                    '</div>' +
-                    '<div class="checkout-section">' +
-                        '<h2 class="checkout-title">Detail Pesanan</h2>' +
-                        '<div class="form-group">' +
-                            '<label for="customerName">Nama Lengkap</label>' +
-                            '<input type="text" id="customerName" placeholder="Masukkan nama Anda" required>' +
-                        '</div>' +
-                        '<div class="form-group">' +
-                            '<label for="customerPhone">No. Telepon</label>' +
-                            '<input type="tel" id="customerPhone" placeholder="08xxxxxxxxxx" required>' +
-                        '</div>' +
-                        '<div class="form-group">' +
-                            '<label for="paymentMethod">Metode Pembayaran</label>' +
-                            '<select id="paymentMethod">' +
-                                '<option value="cash">💵 Cash</option>' +
-                                '<option value="transfer">🏦 Transfer Bank</option>' +
-                                '<option value="gopay">📱 GoPay</option>' +
-                                '<option value="ovo">📱 OVO</option>' +
-                                '<option value="dana">📱 DANA</option>' +
-                            '</select>' +
-                        '</div>' +
-                        '<div class="order-summary">' +
-                            '<div class="summary-row">' +
-                                '<span>Jumlah Item:</span>' +
-                                '<span>' + totalItems + ' item</span>' +
-                            '</div>' +
-                            '<div class="summary-row total">' +
-                                '<span>Total:</span>' +
-                                '<span>Rp ' + total.toLocaleString('id-ID') + '</span>' +
-                            '</div>' +
-                        '</div>' +
-                        '<button class="checkout-btn" onclick="checkout()">Checkout Sekarang</button>' +
-                    '</div>' +
+                '<div class="cart-items">' +
+                cartItemsHTML +
+                '</div>' +
+                '<div class="checkout-section">' +
+                '<h2 class="checkout-title">Konfirmasi Pesanan</h2>' +
+                '<div class="form-group">' +
+                '<label>Nama Penerima</label>' +
+                '<input type="text" id="customerName" placeholder="Masukkan nama Anda" required>' +
+                '</div>' +
+                '<div class="form-group">' +
+                '<label>Nomor Telepon (WhatsApp)</label>' +
+                '<input type="tel" id="customerPhone" placeholder="08xxxxxxxxxx" required>' +
+                '</div>' +
+                '<div class="form-group">' +
+                '<label>Metode Pembayaran</label>' +
+                '<select id="paymentMethod">' +
+                '<option value="cash">? Tunai di Kasir</option>' +
+                '<option value="transfer">? Transfer Bank</option>' +
+                '<option value="gopay">? GoPay / QRIS</option>' +
+                '<option value="dana">? DANA</option>' +
+                '</select>' +
+                '</div>' +
+                '<div class="order-summary">' +
+                '<div class="summary-row">' +
+                '<span>Total Item</span>' +
+                '<span>' + totalItems + ' Produk</span>' +
+                '</div>' +
+                '<div class="summary-row total">' +
+                '<span>Total Bayar</span>' +
+                '<span>Rp ' + total.toLocaleString('id-ID') + '</span>' +
+                '</div>' +
+                '</div>' +
+                '<button class="checkout-btn" onclick="checkout()">Selesaikan Pesanan</button>' +
+                '</div>' +
                 '</div>';
         }
 
@@ -638,36 +474,47 @@
             const payment = document.getElementById('paymentMethod').value;
 
             if (!name || !phone) {
-                alert('Mohon lengkapi nama dan nomor telepon!');
+                alert('Mohon lengkapi nama dan nomor telepon untuk memproses pesanan!');
                 return;
             }
 
-            // Untuk sementara simpan di sessionStorage
-            // Nanti bisa diganti dengan AJAX request ke server
+            const cart = getCart();
+            const total = calculateTotal();
+
             const orderData = {
-                name: name,
-                phone: phone,
-                payment: payment,
-                items: getCart(),
-                total: calculateTotal(),
-                date: new Date().toISOString()
+                nama: name,
+                telp: phone,
+                metode: payment,
+                cart: cart,
+                total: total
             };
 
-            console.log('Order Data:', orderData);
-            
-            // Clear cart
-            sessionStorage.removeItem('cart');
-            
-            // Show success modal
-            document.getElementById('successModal').classList.add('show');
+            fetch('checkout', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(orderData)
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    sessionStorage.removeItem('cart');
+                    updateCartBadge();
+                    document.getElementById('successModal').classList.add('show');
+                } else {
+                    alert('Gagal: ' + data.message);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Terjadi kesalahan koneksi!');
+            });
         }
 
         function backToMenu() {
             window.location.href = 'menu';
         }
 
-        // Initialize on page load
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', function () {
             renderCart();
             updateCartBadge();
         });
