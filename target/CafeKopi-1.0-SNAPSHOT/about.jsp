@@ -282,37 +282,10 @@
             </div>
         </div>
 
-<<<<<<< HEAD
         <div class="glass-card" data-aos>
             <h2 class="section-title">Testimoni Pelanggan</h2>
             <div style="text-align: center; margin-bottom: 20px;">
                 <p style="color: #666;">Kepuasan Anda adalah prioritas kami dalam menyajikan kenyamanan dan rasa.</p>
-=======
-        <!-- Our Values -->
-        <div class="about-section">
-            <h2>💎 Nilai-Nilai Kami MANGEA 00</h2>
-            <div class="values-grid">
-                <div class="value-item">
-                    <div class="value-icon">⭐</div>
-                    <h3>Kualitas Premium</h3>
-                    <p>Hanya menggunakan biji kopi terbaik dari berbagai penjuru dunia</p>
-                </div>
-                <div class="value-item">
-                    <div class="value-icon">❤️</div>
-                    <h3>Pelayanan Terbaik</h3>
-                    <p>Setiap pelanggan adalah bagian dari keluarga Beans & Brew</p>
-                </div>
-                <div class="value-item">
-                    <div class="value-icon">🌍</div>
-                    <h3>Berkelanjutan</h3>
-                    <p>Komitmen terhadap lingkungan dan petani kopi lokal</p>
-                </div>
-                <div class="value-item">
-                    <div class="value-icon">🎨</div>
-                    <h3>Inovasi</h3>
-                    <p>Terus berinovasi menghadirkan menu dan pengalaman baru</p>
-                </div>
->>>>>>> origin/master
             </div>
 
             <div class="team-grid">
