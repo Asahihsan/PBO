@@ -11,6 +11,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Tentang Kami - Beans & Brew Professional</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
     
     <style>
@@ -33,11 +34,12 @@
             background-color: var(--bg-light);
             color: #333;
             overflow-x: hidden;
+            padding-top: 80px; /* Jarak agar tidak tertutup Navbar fixed */
         }
 
-        /* --- Hero Section with Parallax Effect --- */
+        /* --- Hero Section --- */
         .hero {
-            height: 80vh;
+            height: 70vh;
             background: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)), 
                         url('https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?auto=format&fit=crop&q=80&w=2070');
             background-size: cover;
@@ -75,9 +77,8 @@
             z-index: 10;
         }
 
-        /* --- About Section Glassmorphism --- */
         .glass-card {
-            background: rgba(255, 255, 255, 0.95);
+            background: rgba(255, 255, 255, 0.98);
             backdrop-filter: blur(10px);
             border-radius: 30px;
             padding: 60px;
@@ -89,9 +90,8 @@
             font-family: 'Playfair Display', serif;
             font-size: 2.5rem;
             color: var(--primary-dark);
-            margin-bottom: 30px;
+            margin-bottom: 10px;
             text-align: center;
-            position: relative;
         }
 
         .section-title::after {
@@ -133,21 +133,21 @@
             display: block;
         }
 
-        /* --- Team Grid --- */
+        /* --- Testimonial/Team Grid --- */
         .team-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
             gap: 40px;
+            margin-top: 40px;
         }
 
         .team-member {
             text-align: center;
-            group: hover;
         }
 
         .avatar-wrapper {
-            width: 180px;
-            height: 180px;
+            width: 150px;
+            height: 150px;
             margin: 0 auto 20px;
             border-radius: 50%;
             overflow: hidden;
@@ -161,20 +161,27 @@
             border-color: var(--accent-color);
         }
 
-        .team-info h3 {
-            font-family: 'Playfair Display', serif;
-            font-size: 1.4rem;
-            color: var(--primary-dark);
-        }
-
         .role {
             color: var(--accent-color);
             text-transform: uppercase;
-            font-size: 0.8rem;
+            font-size: 0.75rem;
             font-weight: 600;
             letter-spacing: 2px;
-            margin-bottom: 10px;
             display: block;
+            margin-bottom: 5px;
+        }
+
+        .stars {
+            color: #ffc107;
+            margin: 10px 0;
+            font-size: 1.2rem;
+        }
+
+        .testimonial-text {
+            font-style: italic;
+            font-size: 0.95rem;
+            color: #555;
+            line-height: 1.6;
         }
 
         /* --- Contact Bar --- */
@@ -223,7 +230,6 @@
             font-size: 0.9rem;
         }
 
-        /* --- Animations --- */
         [data-aos] {
             opacity: 0;
             transform: translateY(30px);
@@ -254,14 +260,14 @@
         <div class="glass-card" data-aos>
             <h2 class="section-title">Warisan Kami</h2>
             <div style="max-width: 800px; margin: 0 auto; text-align: center; line-height: 2;">
-                <p>Didirikan dengan gairah untuk menghadirkan cita rasa otentik ke tengah kota yang sibuk. Kami berkelana melintasi pegunungan untuk menemukan petani lokal yang berdedikasi tinggi, memastikan setiap cangkir yang Anda nikmati adalah bentuk penghargaan bagi mereka.</p>
+                <p>Didirikan dengan gairah untuk menghadirkan cita rasa otentik ke tengah kota yang sibuk. Kami memastikan setiap cangkir yang Anda nikmati adalah bentuk penghargaan bagi petani lokal.</p>
             </div>
             
             <div class="story-grid">
                 <div class="story-card">
                     <span class="year-label">2020</span>
                     <h3>The Seed</h3>
-                    <p>Memulai perjalanan dari sebuah kedai kecil di sudut Jakarta dengan mimpi besar.</p>
+                    <p>Memulai perjalanan dari sebuah kedai kecil di sudut kota dengan mimpi besar.</p>
                 </div>
                 <div class="story-card">
                     <span class="year-label">2022</span>
@@ -277,33 +283,45 @@
         </div>
 
         <div class="glass-card" data-aos>
-            <h2 class="section-title">Para Kurator Rasa</h2>
+            <h2 class="section-title">Testimoni Pelanggan</h2>
+            <div style="text-align: center; margin-bottom: 20px;">
+                <p style="color: #666;">Kepuasan Anda adalah prioritas kami dalam menyajikan kenyamanan dan rasa.</p>
+            </div>
+
             <div class="team-grid">
                 <div class="team-member">
                     <div class="avatar-wrapper">
-                        <img src="https://i.pravatar.cc/200?u=arif" alt="CEO" style="width:100%; filter: grayscale(20%);">
+                        <img src="https://i.pravatar.cc/150?u=rena" alt="User" style="width:100%; height:100%; object-fit:cover;">
                     </div>
                     <div class="team-info">
-                        <span class="role">Founder & CEO</span>
-                        <h3>Arif Wijaya</h3>
+                        <span class="role">Pelanggan Setia</span>
+                        <h3>Rena Amelia</h3>
+                        <div class="stars">★★★★★</div>
+                        <p class="testimonial-text">"Tempat paling nyaman buat WFC! Kopinya punya aftertaste yang clean dan bold. Vibes-nya dapet banget, bikin betah berjam-jam."</p>
                     </div>
                 </div>
+
                 <div class="team-member">
                     <div class="avatar-wrapper">
-                        <img src="https://i.pravatar.cc/200?u=sarah" alt="Barista" style="width:100%; filter: grayscale(20%);">
+                        <img src="https://i.pravatar.cc/150?u=dimas" alt="User" style="width:100%; height:100%; object-fit:cover;">
                     </div>
                     <div class="team-info">
-                        <span class="role">Head of Barista</span>
-                        <h3>Sarah Lestari</h3>
+                        <span class="role">Coffee Enthusiast</span>
+                        <h3>Dimas Pratama</h3>
+                        <div class="stars">★★★★★</div>
+                        <p class="testimonial-text">"Signature latte-nya juara! Rate kopi di sini jujur 10/10. Beans-nya kerasa banget kualitas premiumnya, bukan kaleng-kaleng."</p>
                     </div>
                 </div>
+
                 <div class="team-member">
                     <div class="avatar-wrapper">
-                        <img src="https://i.pravatar.cc/200?u=budi" alt="Sourcing" style="width:100%; filter: grayscale(20%);">
+                        <img src="https://i.pravatar.cc/150?u=santi" alt="User" style="width:100%; height:100%; object-fit:cover;">
                     </div>
                     <div class="team-info">
-                        <span class="role">Coffee Specialist</span>
-                        <h3>Budi Santoso</h3>
+                        <span class="role">Digital Nomad</span>
+                        <h3>Santi Wijaya</h3>
+                        <div class="stars">★★★★☆</div>
+                        <p class="testimonial-text">"Pelayanan sangat ramah dan suasana yang tenang di tengah kota. Cocok banget buat yang cari inspirasi sambil ngopi cantik."</p>
                     </div>
                 </div>
             </div>
@@ -326,7 +344,7 @@
 
         <div style="text-align: center; margin-top: 50px;">
             <h2 style="font-family: 'Playfair Display', serif; font-size: 2rem;">Ingin merasakan aromanya?</h2>
-            <a href="menu.jsp" class="btn-premium">PESAN SEKARANG</a>
+            <a href="menu" class="btn-premium">PESAN SEKARANG</a>
         </div>
     </div>
 
@@ -335,7 +353,7 @@
     </footer>
 
     <script>
-        // Simple Scroll Animation Observer
+        // Scroll Animation Observer
         const observer = new IntersectionObserver((entries) => {
             entries.forEach(entry => {
                 if (entry.isIntersecting) {
@@ -347,4 +365,4 @@
         document.querySelectorAll('[data-aos]').forEach((el) => observer.observe(el));
     </script>
 </body>
-</html>
+</html> 
