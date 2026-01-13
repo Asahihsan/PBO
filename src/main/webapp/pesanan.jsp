@@ -415,8 +415,8 @@
                 cartItemsHTML +=
                     '<div class="cart-item">' +
                     '<div class="item-details">' +
-                    '<div class="item-name">' + item.name + ' ' + kategoriIcon + '</div>' +
-                    '<div class="item-price">' + kategoriNama + ' ? Rp ' + item.price.toLocaleString('id-ID') + '</div>' +
+                    '<div class="item-name">' + item.name + '</div>' +
+                    '<div class="item-price">' + kategoriNama + ' - Rp ' + item.price.toLocaleString('id-ID') + '</div>' +
                     '</div>' +
                     '<div class="item-controls">' +
                     '<div class="quantity-control">' +
