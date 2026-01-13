@@ -1,14 +1,12 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ page import="java.util.*, java.sql.*, config.Koneksi, model.User" %>
 <%
-    // Cek apakah user sudah login dan role kasir
     User user = (User) session.getAttribute("user");
     if (user == null || !"kasir".equals(user.getRole())) {
         response.sendRedirect("login.jsp?error=required");
         return;
     }
 
-    // Ambil semua pesanan dengan detail kategori
     List<Map<String, Object>> pesananList = new ArrayList<>();
     try {
         Connection conn = Koneksi.getConnection();
@@ -22,7 +20,6 @@
                 + "FROM pesanan p ORDER BY p.tanggal DESC";
         Statement stmt = conn.createStatement();
         ResultSet rs = stmt.executeQuery(query);
-
         while (rs.next()) {
             Map<String, Object> pesanan = new HashMap<>();
             pesanan.put("id", rs.getInt("id_pesanan"));
@@ -36,510 +33,244 @@
             pesanan.put("kategori", rs.getString("kategori_list"));
             pesananList.add(pesanan);
         }
-
-        rs.close();
-        stmt.close();
-    } catch (Exception e) {
-        e.printStackTrace();
-    }
+        rs.close(); stmt.close();
+    } catch (Exception e) { e.printStackTrace(); }
 %>
 <!DOCTYPE html>
 <html lang="id">
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Dashboard Kasir - Beans & Brew</title>
-        <style>
-            * {
-                margin: 0;
-                padding: 0;
-                box-sizing: border-box;
-            }
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cashier Workspace - Beans & Brew</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        :root {
+            --primary: #2d1b14;
+            --accent: #d4a373;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --info: #3b82f6;
+            --bg-body: #f8fafc;
+            --sidebar-width: 260px;
+        }
 
-            body {
-                font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-                background: #f5f5f5;
-            }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', sans-serif; background: var(--bg-body); color: #1e293b; display: flex; min-height: 100vh; }
 
-            /* Navbar */
-            nav {
-                background: linear-gradient(135deg, #3e2723 0%, #5d4037 100%);
-                padding: 1rem 5%;
-                box-shadow: 0 2px 10px rgba(0,0,0,0.3);
-                position: sticky;
-                top: 0;
-                z-index: 100;
-            }
+        /* Sidebar Navigation */
+        .sidebar {
+            width: var(--sidebar-width);
+            background: var(--primary);
+            color: white;
+            padding: 2rem 1.5rem;
+            position: fixed;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
 
-            nav .container {
-                display: flex;
-                justify-content: space-between;
-                align-items: center;
-                max-width: 1400px;
-                margin: 0 auto;
-            }
+        .sidebar-brand { font-size: 1.5rem; font-weight: 700; margin-bottom: 3rem; display: flex; align-items: center; gap: 12px; }
+        .nav-menu { list-style: none; flex-grow: 1; }
+        .nav-item { margin-bottom: 0.5rem; }
+        .nav-link { 
+            display: flex; align-items: center; gap: 12px; padding: 12px 16px; 
+            color: #a8a29e; text-decoration: none; border-radius: 12px; transition: 0.3s;
+        }
+        .nav-link.active { background: var(--accent); color: white; }
+        .nav-link:hover:not(.active) { background: rgba(255,255,255,0.05); color: white; }
 
-            .logo {
-                font-size: 1.8rem;
-                font-weight: bold;
-                color: #fff;
-                display: flex;
-                align-items: center;
-                gap: 0.5rem;
-            }
+        /* Main Content Area */
+        .main-wrapper { margin-left: var(--sidebar-width); width: calc(100% - var(--sidebar-width)); padding: 2rem 3rem; }
 
-            .logo::before {
-                content: "☕";
-                font-size: 2rem;
-            }
+        .top-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 2.5rem; }
+        .user-profile { display: flex; align-items: center; gap: 15px; background: white; padding: 8px 20px; border-radius: 50px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); }
 
-            .user-info {
-                display: flex;
-                align-items: center;
-                gap: 1.5rem;
-                color: white;
-            }
+        /* Stats Section */
+        .stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1.5rem; margin-bottom: 2.5rem; }
+        .stat-card { background: white; padding: 1.5rem; border-radius: 20px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); display: flex; align-items: center; gap: 1rem; }
+        .stat-icon { width: 50px; height: 50px; border-radius: 14px; display: flex; align-items: center; justify-content: center; font-size: 1.25rem; }
+        .val { font-size: 1.5rem; font-weight: 700; display: block; }
+        .label { font-size: 0.85rem; color: #64748b; font-weight: 500; }
 
-            .welcome {
-                font-size: 1.1rem;
-            }
+        /* Table Design */
+        .data-card { background: white; border-radius: 24px; padding: 1.5rem; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.05); }
+        .table-controls { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; padding: 0 10px; }
+        
+        .tab-group { background: #f1f5f9; padding: 5px; border-radius: 12px; display: flex; gap: 5px; }
+        .tab-btn { border: none; padding: 8px 16px; border-radius: 8px; cursor: pointer; background: transparent; color: #64748b; font-weight: 600; font-size: 0.85rem; transition: 0.3s; }
+        .tab-btn.active { background: white; color: var(--primary); box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
 
-            .logout-btn {
-                background: #ff6f00;
-                color: white;
-                border: none;
-                padding: 0.7rem 1.5rem;
-                border-radius: 50px;
-                font-weight: bold;
-                cursor: pointer;
-                text-decoration: none;
-                transition: all 0.3s;
-            }
+        .styled-table { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
+        .styled-table th { text-align: left; padding: 15px; border-bottom: 2px solid #f1f5f9; color: #64748b; font-weight: 600; }
+        .styled-table td { padding: 18px 15px; border-bottom: 1px solid #f1f5f9; vertical-align: middle; }
+        
+        /* Status Badges */
+        .badge { padding: 6px 12px; border-radius: 8px; font-size: 0.75rem; font-weight: 700; text-transform: uppercase; }
+        .badge-pending { background: #fef3c7; color: #d97706; }
+        .badge-progress { background: #dbeafe; color: #2563eb; }
+        .badge-selesai { background: #d1fae5; color: #059669; }
+        .badge-batal { background: #fee2e2; color: #dc2626; }
 
-            .logout-btn:hover {
-                background: #ff8f00;
-                transform: translateY(-2px);
-            }
+        /* Action Buttons */
+        .action-btns { display: flex; gap: 8px; }
+        .btn-circle { width: 35px; height: 35px; border-radius: 10px; border: none; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: 0.2s; color: white; }
+        .btn-circle:hover { transform: translateY(-2px); opacity: 0.9; }
 
-            /* Main Content */
-            .main-content {
-                max-width: 1400px;
-                margin: 0 auto;
-                padding: 2rem 5%;
-            }
+        .btn-p { background: var(--warning); }
+        .btn-s { background: var(--success); }
+        .btn-b { background: #f1f5f9; color: #64748b; }
 
-            .page-header {
-                margin-bottom: 2rem;
-            }
+        @media (max-width: 1200px) { .stats-grid { grid-template-columns: repeat(2, 1fr); } }
+    </style>
+</head>
+<body>
 
-            .page-header h1 {
-                font-size: 2.5rem;
-                color: #3e2723;
-                margin-bottom: 0.5rem;
-            }
-
-            .page-header p {
-                color: #666;
-                font-size: 1.1rem;
-            }
-
-            /* Stats Cards */
-            .stats-grid {
-                display: grid;
-                grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-                gap: 1.5rem;
-                margin-bottom: 2rem;
-            }
-
-            .stat-card {
-                background: white;
-                padding: 1.5rem;
-                border-radius: 15px;
-                box-shadow: 0 3px 15px rgba(0,0,0,0.1);
-                display: flex;
-                align-items: center;
-                gap: 1rem;
-            }
-
-            .stat-icon {
-                font-size: 3rem;
-            }
-
-            .stat-info h3 {
-                color: #666;
-                font-size: 0.9rem;
-                font-weight: normal;
-                margin-bottom: 0.3rem;
-            }
-
-            .stat-info .stat-value {
-                font-size: 2rem;
-                font-weight: bold;
-                color: #3e2723;
-            }
-
-            /* Filter Tabs */
-            .filter-tabs {
-                display: flex;
-                gap: 1rem;
-                margin-bottom: 2rem;
-                flex-wrap: wrap;
-            }
-
-            .tab-btn {
-                padding: 0.8rem 1.5rem;
-                border: 2px solid #e0e0e0;
-                background: white;
-                border-radius: 50px;
-                cursor: pointer;
-                transition: all 0.3s;
-                font-weight: bold;
-            }
-
-            .tab-btn.active {
-                background: #ff6f00;
-                color: white;
-                border-color: #ff6f00;
-            }
-
-            .tab-btn:hover {
-                border-color: #ff6f00;
-            }
-
-            /* Pesanan Table */
-            .pesanan-container {
-                background: white;
-                border-radius: 15px;
-                padding: 2rem;
-                box-shadow: 0 3px 15px rgba(0,0,0,0.1);
-            }
-
-            .pesanan-table {
-                width: 100%;
-                border-collapse: collapse;
-            }
-
-            .pesanan-table thead {
-                background: #f5f5f5;
-            }
-
-            .pesanan-table th {
-                padding: 1rem;
-                text-align: left;
-                font-weight: bold;
-                color: #3e2723;
-            }
-
-            .pesanan-table td {
-                padding: 1rem;
-                border-bottom: 1px solid #e0e0e0;
-            }
-
-            .pesanan-table tr:hover {
-                background: #f9f9f9;
-            }
-
-            .status-badge {
-                padding: 0.4rem 1rem;
-                border-radius: 50px;
-                font-size: 0.85rem;
-                font-weight: bold;
-                display: inline-block;
-            }
-
-            .status-pending {
-                background: #fff3e0;
-                color: #f57c00;
-            }
-
-            .status-progress {
-                background: #e3f2fd;
-                color: #1976d2;
-            }
-
-            .status-selesai {
-                background: #e8f5e9;
-                color: #388e3c;
-            }
-
-            .status-batal {
-                background: #ffebee;
-                color: #d32f2f;
-            }
-
-            .action-btn {
-                padding: 0.5rem 1rem;
-                border: none;
-                border-radius: 8px;
-                cursor: pointer;
-                font-weight: bold;
-                margin-right: 0.5rem;
-                transition: all 0.3s;
-            }
-
-            .btn-detail {
-                background: #2196f3;
-                color: white;
-            }
-
-            .btn-detail:hover {
-                background: #1976d2;
-            }
-
-            .btn-progress {
-                background: #ff9800;
-                color: white;
-            }
-
-            .btn-progress:hover {
-                background: #f57c00;
-            }
-
-            .btn-selesai {
-                background: #4caf50;
-                color: white;
-            }
-
-            .btn-selesai:hover {
-                background: #388e3c;
-            }
-
-            .btn-batal {
-                background: #f44336;
-                color: white;
-            }
-
-            .btn-batal:hover {
-                background: #d32f2f;
-            }
-
-            .empty-state {
-                text-align: center;
-                padding: 3rem;
-                color: #999;
-            }
-
-            .empty-state-icon {
-                font-size: 4rem;
-                margin-bottom: 1rem;
-            }
-
-            /* Responsive */
-            @media (max-width: 968px) {
-                .pesanan-table {
-                    display: block;
-                    overflow-x: auto;
-                }
-            }
-        </style>
-    </head>
-    <body>
-        <!-- Navbar -->
-        <nav>
-            <div class="container">
-                <div class="logo">Beans & Brew - Kasir</div>
-                <div class="user-info">
-                    <span class="welcome">👋 Halo, <%= user.getNama()%></span>
-                    <a href="logout" class="logout-btn">Logout</a>
-                </div>
-            </div>
-        </nav>
-
-        <!-- Main Content -->
-        <div class="main-content">
-            <div class="page-header">
-                <h1>Dashboard Kasir</h1>
-                <p>Kelola pesanan pelanggan di sini</p>
-            </div>
-
-            <!-- Stats -->
-            <div class="stats-grid">
-                <%
-                    int totalPesanan = pesananList.size();
-                    int pending = 0, progress = 0, selesai = 0;
-                    int totalPendapatan = 0;
-
-                    for (Map<String, Object> p : pesananList) {
-                        String status = (String) p.get("status");
-                        if ("pending".equals(status)) {
-                            pending++;
-                        } else if ("progress".equals(status)) {
-                            progress++;
-                        } else if ("selesai".equals(status)) {
-                            selesai++;
-                            totalPendapatan += (Integer) p.get("total");
-                        }
-                    }
-                %>
-                <div class="stat-card">
-                    <div class="stat-icon">📋</div>
-                    <div class="stat-info">
-                        <h3>Total Pesanan</h3>
-                        <div class="stat-value"><%= totalPesanan%></div>
-                    </div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-icon">⏳</div>
-                    <div class="stat-info">
-                        <h3>Pending</h3>
-                        <div class="stat-value"><%= pending%></div>
-                    </div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-icon">🔄</div>
-                    <div class="stat-info">
-                        <h3>Progress</h3>
-                        <div class="stat-value"><%= progress%></div>
-                    </div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-icon">✅</div>
-                    <div class="stat-info">
-                        <h3>Selesai</h3>
-                        <div class="stat-value"><%= selesai%></div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Filter Tabs -->
-            <div class="filter-tabs">
-                <button class="tab-btn active" onclick="filterStatus('all')">Semua (<%= totalPesanan%>)</button>
-                <button class="tab-btn" onclick="filterStatus('pending')">Pending (<%= pending%>)</button>
-                <button class="tab-btn" onclick="filterStatus('progress')">Progress (<%= progress%>)</button>
-                <button class="tab-btn" onclick="filterStatus('selesai')">Selesai (<%= selesai%>)</button>
-            </div>
-
-            <!-- Pesanan Table -->
-            <div class="pesanan-container">
-                <% if (pesananList.isEmpty()) { %>
-                <div class="empty-state">
-                    <div class="empty-state-icon">📭</div>
-                    <h3>Belum ada pesanan</h3>
-                    <p>Pesanan akan muncul di sini</p>
-                </div>
-                <% } else { %>
-                <table class="pesanan-table">
-                    <thead>
-                        <tr>
-                            <th>ID</th>
-                            <th>Pelanggan</th>
-                            <th>Telepon</th>
-                            <th>Item</th>
-                            <th>Kategori</th>
-                            <th>Total</th>
-                            <th>Metode</th>
-                            <th>Status</th>
-                            <th>Aksi</th>
-                        </tr>
-                    </thead>
-                    <tbody id="pesananTable">
-                        <%
-                            for (Map<String, Object> pesanan : pesananList) {
-                                int id = (Integer) pesanan.get("id");
-                                String nama = (String) pesanan.get("nama");
-                                String telp = (String) pesanan.get("telp");
-                                int total = (Integer) pesanan.get("total");
-                                String metode = (String) pesanan.get("metode");
-                                String status = (String) pesanan.get("status");
-                                int jumlahItem = (Integer) pesanan.get("jumlah_item");
-                                String kategori = (String) pesanan.get("kategori");
-
-                                // Icon untuk kategori
-                                String kategoriDisplay = "";
-                                if (kategori != null) {
-                                    if (kategori.contains("Panas") && kategori.contains("Dingin")) {
-                                        kategoriDisplay = "🔥🧊 Mix";
-                                    } else if (kategori.contains("Panas")) {
-                                        kategoriDisplay = "🔥 Panas";
-                                    } else if (kategori.contains("Dingin")) {
-                                        kategoriDisplay = "🧊 Dingin";
-                                    }
-                                }
-                        %>
-                        <tr data-status="<%= status%>">
-                            <td>#<%= id%></td>
-                            <td><%= nama%></td>
-                            <td><%= telp%></td>
-                            <td><%= jumlahItem%> item</td>
-                            <td><%= kategoriDisplay%></td>
-                            <td>Rp <%= String.format("%,d", total)%></td>
-                            <td><%= metode%></td>
-                            <td>
-                                <span class="status-badge status-<%= status%>">
-                                    <%= status.toUpperCase()%>
-                                </span>
-                            </td>
-                            <td>
-                                <% if ("pending".equals(status)) {%>
-                                <button class="action-btn btn-progress" onclick="updateStatus(<%= id%>, 'progress')">
-                                    Proses
-                                </button>
-                                <% } else if ("progress".equals(status)) {%>
-                                <button class="action-btn btn-selesai" onclick="updateStatus(<%= id%>, 'selesai')">
-                                    Selesai
-                                </button>
-                                <% } %>
-                                <% if (!"selesai".equals(status) && !"batal".equals(status)) {%>
-                                <button class="action-btn btn-batal" onclick="updateStatus(<%= id%>, 'batal')">
-                                    Batal
-                                </button>
-                                <% } %>
-                            </td>
-                        </tr>
-                        <% } %>
-                    </tbody>
-                </table>
-                <% }%>
-            </div>
+    <aside class="sidebar">
+        <div class="sidebar-brand">
+            <i class="fas fa-mug-hot text-accent"></i> Beans & Brew
         </div>
+        <ul class="nav-menu">
+            <li class="nav-item"><a href="#" class="nav-link active"><i class="fas fa-th-large"></i> Dashboard</a></li>
+        </ul>
+        <div style="border-top: 1px solid rgba(255,255,255,0.1); padding-top: 20px;">
+            <a href="logout" class="nav-link" style="color: #ef4444;"><i class="fas fa-sign-out-alt"></i> Keluar Sistem</a>
+        </div>
+    </aside>
 
-        <script>
-            function filterStatus(status) {
-                const rows = document.querySelectorAll('#pesananTable tr');
-                const tabs = document.querySelectorAll('.tab-btn');
+    <main class="main-wrapper">
+        <header class="top-header">
+            <div>
+                <h1 style="font-size: 1.8rem; font-weight: 700;">Workspace Kasir</h1>
+                <p style="color: #64748b;">Pantau dan proses pesanan pelanggan secara real-time.</p>
+            </div>
+            <div class="user-profile">
+                <div style="text-align: right">
+                    <span style="display: block; font-weight: 600; font-size: 0.9rem;"><%= user.getNama()%></span>
+                    <span style="font-size: 0.75rem; color: #64748b;">Kasir On-Duty</span>
+                </div>
+                <img src="https://ui-avatars.com/api/?name=<%= user.getNama()%>&background=d4a373&color=fff" style="width: 40px; border-radius: 50%" alt="">
+            </div>
+        </header>
 
-                tabs.forEach(tab => tab.classList.remove('active'));
-                event.target.classList.add('active');
-
-                rows.forEach(row => {
-                    if (status === 'all') {
-                        row.style.display = '';
-                    } else {
-                        if (row.dataset.status === status) {
-                            row.style.display = '';
-                        } else {
-                            row.style.display = 'none';
-                        }
-                    }
-                });
+        <%
+            int total = pesananList.size();
+            int pnd = 0, prg = 0, sls = 0;
+            for (Map<String, Object> p : pesananList) {
+                String s = (String) p.get("status");
+                if ("pending".equals(s)) pnd++;
+                else if ("progress".equals(s)) prg++;
+                else if ("selesai".equals(s)) sls++;
             }
+        %>
+        <section class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-icon" style="background: #f1f5f9; color: var(--primary)"><i class="fas fa-shopping-cart"></i></div>
+                <div><span class="label">Total Order</span><span class="val"><%= total %></span></div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon" style="background: #fffbeb; color: #d97706;"><i class="fas fa-clock"></i></div>
+                <div><span class="label">Pending</span><span class="val"><%= pnd %></span></div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon" style="background: #eff6ff; color: #2563eb;"><i class="fas fa-spinner"></i></div>
+                <div><span class="label">On Progress</span><span class="val"><%= prg %></span></div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon" style="background: #ecfdf5; color: #059669;"><i class="fas fa-check-circle"></i></div>
+                <div><span class="label">Completed</span><span class="val"><%= sls %></span></div>
+            </div>
+        </section>
 
-            function updateStatus(id, newStatus) {
-                if (!confirm('Yakin ingin mengubah status pesanan ini?')) {
-                    return;
-                }
+        <section class="data-card">
+            <div class="table-controls">
+                <h3 style="font-weight: 700;">Daftar Pesanan Terkini</h3>
+                <div class="tab-group">
+                    <button class="tab-btn active" onclick="filterStatus('all')">Semua</button>
+                    <button class="tab-btn" onclick="filterStatus('pending')">Pending</button>
+                    <button class="tab-btn" onclick="filterStatus('progress')">Proses</button>
+                    <button class="tab-btn" onclick="filterStatus('selesai')">Selesai</button>
+                </div>
+            </div>
 
+            <table class="styled-table">
+                <thead>
+                    <tr>
+                        <th>ORDER ID</th>
+                        <th>PELANGGAN</th>
+                        <th>JENIS MENU</th>
+                        <th>TOTAL BAYAR</th>
+                        <th>METODE</th>
+                        <th>STATUS</th>
+                        <th style="text-align: center;">AKSI</th>
+                    </tr>
+                </thead>
+                <tbody id="pesananTable">
+                    <% for (Map<String, Object> p : pesananList) { 
+                        String status = (String) p.get("status");
+                        int id = (Integer) p.get("id");
+                    %>
+                    <tr data-status="<%= status %>">
+                        <td style="font-weight: 700; color: var(--accent);">#ORD-<%= id %></td>
+                        <td>
+                            <div style="font-weight: 600;"><%= p.get("nama") %></div>
+                            <div style="font-size: 0.75rem; color: #94a3b8;"><%= p.get("telp") %></div>
+                        </td>
+                        <td>
+                            <span style="font-size: 0.8rem;"><%= p.get("jumlah_item") %> item</span>
+                            <div style="font-size: 0.7rem; color: #64748b;"><%= p.get("kategori") != null ? p.get("kategori") : "-" %></div>
+                        </td>
+                        <td style="font-weight: 600;">Rp <%= String.format("%,d", p.get("total")) %></td>
+                        <td><span style="font-size: 0.8rem; color: #64748b;"><i class="fas fa-credit-card"></i> <%= p.get("metode") %></span></td>
+                        <td><span class="badge badge-<%= status %>"><%= status %></span></td>
+                        <td>
+                            <div class="action-btns" style="justify-content: center;">
+                                <% if ("pending".equals(status)) { %>
+                                    <button class="btn-circle btn-p" title="Proses Pesanan" onclick="updateStatus(<%= id %>, 'progress')"><i class="fas fa-play"></i></button>
+                                <% } else if ("progress".equals(status)) { %>
+                                    <button class="btn-circle btn-s" title="Selesaikan" onclick="updateStatus(<%= id %>, 'selesai')"><i class="fas fa-check"></i></button>
+                                <% } %>
+                                <% if (!"selesai".equals(status) && !"batal".equals(status)) { %>
+                                    <button class="btn-circle btn-b" title="Batalkan" onclick="updateStatus(<%= id %>, 'batal')"><i class="fas fa-times"></i></button>
+                                <% } %>
+                            </div>
+                        </td>
+                    </tr>
+                    <% } %>
+                </tbody>
+            </table>
+        </section>
+    </main>
+
+    <script>
+        function filterStatus(status) {
+            const rows = document.querySelectorAll('#pesananTable tr');
+            const btns = document.querySelectorAll('.tab-btn');
+            
+            btns.forEach(b => b.classList.remove('active'));
+            event.target.classList.add('active');
+
+            rows.forEach(row => {
+                row.style.display = (status === 'all' || row.dataset.status === status) ? '' : 'none';
+            });
+        }
+
+        function updateStatus(id, newStatus) {
+            if (confirm('Konfirmasi perubahan status pesanan #' + id + '?')) {
                 fetch('update-status', {
                     method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/x-www-form-urlencoded',
-                    },
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
                     body: 'id=' + id + '&status=' + newStatus
                 })
-                        .then(response => response.json())
-                        .then(data => {
-                            if (data.success) {
-                                alert('Status berhasil diupdate!');
-                                location.reload();
-                            } else {
-                                alert('Gagal update status!');
-                            }
-                        })
-                        .catch(error => {
-                            console.error('Error:', error);
-                            alert('Terjadi kesalahan!');
-                        });
+                .then(res => res.json())
+                .then(data => {
+                    if (data.success) location.reload();
+                    else alert('Gagal memperbarui status.');
+                });
             }
-        </script>
-    </body>
+        }
+    </script>
+</body>
 </html>

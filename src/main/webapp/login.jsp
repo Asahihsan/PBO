@@ -1,300 +1,351 @@
-<%-- 
-    Document   : login
-    Created on : Jan 7, 2026, 8:50:57 AM
+    <%-- 
+    Document   : login.jsp
+    Created on : Jan 7, 2026
     Author     : kenas
 --%>
 
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <!DOCTYPE html>
 <html lang="id">
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Login - Beans & Brew</title>
-        <style>
-            * {
-                margin: 0;
-                padding: 0;
-                box-sizing: border-box;
-            }
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Beans & Brew Professional</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
+    <style>
+        :root {
+            --primary-dark: #2d1b14;
+            --accent-color: #d4a373; /* Gold Coffee */
+            --glass-bg: rgba(255, 255, 255, 0.9);
+            --transition: all 0.3s cubic-bezier(0.165, 0.84, 0.44, 1);
+        }
 
-            body {
-                font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-                background: linear-gradient(135deg, #3e2723 0%, #5d4037 100%);
-                min-height: 100vh;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                padding: 2rem;
-            }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
-            .login-container {
-                background: white;
-                border-radius: 20px;
-                box-shadow: 0 10px 40px rgba(0,0,0,0.3);
-                max-width: 450px;
-                width: 100%;
-                padding: 3rem;
-                animation: slideIn 0.5s ease-out;
-            }
+        body {
+            font-family: 'Poppins', sans-serif;
+            /* Background Image dengan Overlay Gelap */
+            background: linear-gradient(rgba(45, 27, 20, 0.8), rgba(45, 27, 20, 0.8)), 
+                        url('https://images.unsplash.com/photo-1497933322477-911066fa7c63?auto=format&fit=crop&q=80&w=2071');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
 
-            @keyframes slideIn {
-                from {
-                    opacity: 0;
-                    transform: translateY(-30px);
-                }
-                to {
-                    opacity: 1;
-                    transform: translateY(0);
-                }
-            }
+        .login-card {
+            background: var(--glass-bg);
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 30px;
+            box-shadow: 0 25px 50px rgba(0,0,0,0.4);
+            max-width: 450px;
+            width: 100%;
+            padding: 3rem;
+            position: relative;
+            overflow: hidden;
+            animation: fadeIn 0.8s ease-out;
+        }
 
-            .logo-section {
-                text-align: center;
-                margin-bottom: 2rem;
-            }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
 
-            .logo-icon {
-                font-size: 4rem;
-                margin-bottom: 1rem;
-            }
+        /* Dekorasi Aksen */
+        .login-card::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 5px;
+            background: var(--accent-color);
+        }
 
-            .logo-text {
-                font-size: 2rem;
-                font-weight: bold;
-                color: #3e2723;
-            }
+        .logo-section {
+            text-align: center;
+            margin-bottom: 2.5rem;
+        }
 
-            .logo-tagline {
-                color: #666;
-                margin-top: 0.5rem;
-            }
+        .logo-icon {
+            font-size: 3rem;
+            color: var(--primary-dark);
+            margin-bottom: 0.5rem;
+            display: inline-block;
+            filter: drop-shadow(0 4px 6px rgba(0,0,0,0.1));
+        }
 
-            .form-title {
-                font-size: 1.8rem;
-                color: #3e2723;
-                margin-bottom: 2rem;
-                text-align: center;
-            }
+        .logo-text {
+            font-family: 'Playfair Display', serif;
+            font-size: 2.2rem;
+            color: var(--primary-dark);
+            letter-spacing: 1px;
+        }
 
-            .form-group {
-                margin-bottom: 1.5rem;
-            }
+        .logo-tagline {
+            font-size: 0.85rem;
+            color: #888;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-top: 5px;
+        }
 
-            .form-group label {
-                display: block;
-                margin-bottom: 0.5rem;
-                color: #555;
-                font-weight: 500;
-            }
+        .form-group {
+            margin-bottom: 1.5rem;
+            position: relative;
+        }
 
-            .form-group input {
-                width: 100%;
-                padding: 1rem;
-                border: 2px solid #e0e0e0;
-                border-radius: 10px;
-                font-size: 1rem;
-                transition: all 0.3s;
-            }
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: var(--primary-dark);
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
 
-            .form-group input:focus {
-                outline: none;
-                border-color: #ff6f00;
-                box-shadow: 0 0 0 3px rgba(255, 111, 0, 0.1);
-            }
+        .input-wrapper {
+            position: relative;
+        }
 
-            .login-btn {
-                width: 100%;
-                background: #ff6f00;
-                color: white;
-                border: none;
-                padding: 1rem;
-                border-radius: 50px;
-                font-size: 1.1rem;
-                font-weight: bold;
-                cursor: pointer;
-                transition: all 0.3s;
-                margin-bottom: 1rem;
-            }
+        .input-wrapper i {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #aaa;
+            transition: var(--transition);
+        }
 
-            .login-btn:hover {
-                background: #ff8f00;
-                transform: translateY(-2px);
-                box-shadow: 0 5px 15px rgba(255, 111, 0, 0.3);
-            }
+        .form-group input {
+            width: 100%;
+            padding: 12px 15px 12px 45px;
+            border: 1.5px solid #ddd;
+            border-radius: 12px;
+            font-size: 1rem;
+            background: #fff;
+            transition: var(--transition);
+        }
 
-            .guest-btn {
-                width: 100%;
-                background: white;
-                color: #ff6f00;
-                border: 2px solid #ff6f00;
-                padding: 1rem;
-                border-radius: 50px;
-                font-size: 1.1rem;
-                font-weight: bold;
-                cursor: pointer;
-                transition: all 0.3s;
-                margin-bottom: 1.5rem;
-            }
+        .form-group input:focus {
+            outline: none;
+            border-color: var(--accent-color);
+            box-shadow: 0 0 15px rgba(212, 163, 115, 0.2);
+        }
 
-            .guest-btn:hover {
-                background: #ff6f00;
-                color: white;
-            }
+        .form-group input:focus + i {
+            color: var(--accent-color);
+        }
 
-            .divider {
-                text-align: center;
-                margin: 1.5rem 0;
-                position: relative;
-            }
+        .login-btn {
+            width: 100%;
+            background: var(--primary-dark);
+            color: white;
+            border: none;
+            padding: 14px;
+            border-radius: 12px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            margin-top: 10px;
+        }
 
-            .divider::before {
-                content: '';
-                position: absolute;
-                top: 50%;
-                left: 0;
-                width: 100%;
-                height: 1px;
-                background: #e0e0e0;
-            }
+        .login-btn:hover {
+            background: #4a2c1f;
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.15);
+        }
 
-            .divider span {
-                background: white;
-                padding: 0 1rem;
-                position: relative;
-                color: #999;
-            }
+        .divider {
+            text-align: center;
+            margin: 2rem 0;
+            position: relative;
+        }
 
-            .register-link {
-                text-align: center;
-                color: #666;
-            }
+        .divider::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 0;
+            width: 100%;
+            height: 1px;
+            background: #ddd;
+        }
 
-            .register-link a {
-                color: #ff6f00;
-                text-decoration: none;
-                font-weight: bold;
-            }
+        .divider span {
+            background: #fbfbfb; /* Menyamai warna bg card */
+            padding: 0 15px;
+            position: relative;
+            color: #999;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
 
-            .register-link a:hover {
-                text-decoration: underline;
-            }
+        .guest-btn {
+            width: 100%;
+            background: transparent;
+            color: var(--primary-dark);
+            border: 2px solid var(--primary-dark);
+            padding: 12px;
+            border-radius: 12px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+        }
 
-            .back-home {
-                text-align: center;
-                margin-top: 1.5rem;
-            }
+        .guest-btn:hover {
+            background: var(--primary-dark);
+            color: white;
+        }
 
-            .back-home a {
-                color: #ff6f00;
-                text-decoration: none;
-                display: inline-flex;
-                align-items: center;
-                gap: 0.5rem;
-            }
+        .register-link {
+            text-align: center;
+            margin-top: 2rem;
+            font-size: 0.9rem;
+            color: #666;
+        }
 
-            .back-home a:hover {
-                text-decoration: underline;
-            }
+        .register-link a {
+            color: var(--accent-color);
+            text-decoration: none;
+            font-weight: 700;
+        }
 
-            .error-message {
-                background: #ffebee;
-                color: #c62828;
-                padding: 1rem;
-                border-radius: 10px;
-                margin-bottom: 1.5rem;
-                display: none;
-            }
+        .register-link a:hover {
+            text-decoration: underline;
+        }
 
-            .error-message.show {
-                display: block;
-            }
+        .back-home {
+            text-align: center;
+            margin-top: 1.5rem;
+        }
 
-            @media (max-width: 480px) {
-                .login-container {
-                    padding: 2rem;
-                }
-            }
-        </style>
-    </head>
-    <body>
-        <div class="login-container">
-            <div class="logo-section">
-                <div class="logo-icon">☕</div>
-                <div class="logo-text">Beans & Brew</div>
-                <div class="logo-tagline">Your Perfect Coffee Moment</div>
-            </div>
+        .back-home a {
+            color: #888;
+            text-decoration: none;
+            font-size: 0.85rem;
+            transition: var(--transition);
+        }
 
-            <h2 class="form-title">Login</h2>
+        .back-home a:hover {
+            color: var(--primary-dark);
+        }
 
-            <div class="error-message" id="errorMessage"></div>
+        .error-message {
+            background: #fdeaea;
+            color: #d9534f;
+            padding: 12px;
+            border-radius: 10px;
+            margin-bottom: 1.5rem;
+            font-size: 0.85rem;
+            text-align: center;
+            display: none;
+            border: 1px solid #f5c6cb;
+        }
 
-            <form action="login" method="POST" onsubmit="return validateForm()">
-                <div class="form-group">
-                    <label for="email">Email</label>
-                    <input type="email" id="email" name="email" placeholder="masukkan email Anda" required>
-                </div>
+        .error-message.show {
+            display: block;
+            animation: shake 0.4s ease-in-out;
+        }
 
-                <div class="form-group">
-                    <label for="password">Password</label>
-                    <input type="password" id="password" name="password" placeholder="masukkan password Anda" required>
-                </div>
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            75% { transform: translateX(5px); }
+        }
+    </style>
+</head>
+<body>
 
-                <button type="submit" class="login-btn">Login</button>
-            </form>
-
-            <div class="divider">
-                <span>ATAU</span>
-            </div>
-
-            <form action="login" method="POST">
-                <input type="hidden" name="guest" value="true">
-                <button type="submit" class="guest-btn">🚶 Login sebagai Guest</button>
-            </form>
-
-            <div class="register-link">
-                Belum punya akun? <a href="register.jsp">Daftar sekarang</a>
-            </div>
-
-            <div class="back-home">
-                <a href="index.jsp">← Kembali ke Home</a>
-            </div>
+    <div class="login-card">
+        <div class="logo-section">
+            <div class="logo-icon"><i class="fas fa-coffee"></i></div>
+            <h1 class="logo-text">Beans & Brew</h1>
+            <p class="logo-tagline">Exquisite Coffee Experience</p>
         </div>
 
-        <script>
-            function validateForm() {
-                const email = document.getElementById('email').value.trim();
-                const password = document.getElementById('password').value.trim();
+        <div class="error-message" id="errorMessage"></div>
 
-                if (!email || !password) {
-                    showError('Email dan password harus diisi!');
-                    return false;
-                }
+        <form action="login" method="POST" onsubmit="return validateForm()">
+            <div class="form-group">
+                <label for="email">Email Address</label>
+                <div class="input-wrapper">
+                    <input type="email" id="email" name="email" placeholder="example@mail.com" required>
+                    <i class="fas fa-envelope"></i>
+                </div>
+            </div>
 
-                return true;
+            <div class="form-group">
+                <label for="password">Password</label>
+                <div class="input-wrapper">
+                    <input type="password" id="password" name="password" placeholder="••••••••" required>
+                    <i class="fas fa-lock"></i>
+                </div>
+            </div>
+
+            <button type="submit" class="login-btn">Sign In</button>
+        </form>
+
+        <div class="divider">
+            <span>OR</span>
+        </div>
+
+        <form action="login" method="POST">
+            <input type="hidden" name="guest" value="true">
+            <button type="submit" class="guest-btn">
+                <i class="fas fa-user-secret" style="margin-right: 8px;"></i> Continue as Guest
+            </button>
+        </form>
+
+        <p class="register-link">
+            Don't have an account? <a href="register.jsp">Create One</a>
+        </p>
+
+        <div class="back-home">
+            <a href="index.jsp"><i class="fas fa-arrow-left"></i> Back to Home</a>
+        </div>
+    </div>
+
+    <script>
+        function validateForm() {
+            const email = document.getElementById('email').value.trim();
+            const password = document.getElementById('password').value.trim();
+
+            if (!email || !password) {
+                showError('Email and Password are required!');
+                return false;
             }
+            return true;
+        }
 
-            function showError(message) {
-                const errorDiv = document.getElementById('errorMessage');
-                errorDiv.textContent = message;
-                errorDiv.classList.add('show');
+        function showError(message) {
+            const errorDiv = document.getElementById('errorMessage');
+            errorDiv.textContent = message;
+            errorDiv.classList.add('show');
+            setTimeout(() => { errorDiv.classList.remove('show'); }, 5000);
+        }
 
-                setTimeout(() => {
-                    errorDiv.classList.remove('show');
-                }, 5000);
+        window.onload = function () {
+            const urlParams = new URLSearchParams(window.location.search);
+            const error = urlParams.get('error');
+            if (error === 'invalid') {
+                showError('Incorrect Email or Password!');
+            } else if (error === 'required') {
+                showError('Please login to continue.');
             }
-
-            // Check if there's error from server
-            window.onload = function () {
-                const urlParams = new URLSearchParams(window.location.search);
-                const error = urlParams.get('error');
-
-                if (error === 'invalid') {
-                    showError('Email atau password salah!');
-                } else if (error === 'required') {
-                    showError('Silakan login terlebih dahulu!');
-                }
-            }
-        </script>
-    </body>
+        }
+    </script>
+</body>
 </html>

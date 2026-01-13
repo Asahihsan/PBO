@@ -1,20 +1,12 @@
-<%-- 
-    Document   : dashboard-pelanggan
-    Created on : Jan 7, 2026, 11:20:46 AM
-    Author     : kenas
---%>
-
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ page import="java.util.*, java.sql.*, config.Koneksi, model.User" %>
 <%
-    // Cek apakah user sudah login
     User user = (User) session.getAttribute("user");
     if (user == null || "guest".equals(user.getRole())) {
         response.sendRedirect("login.jsp?error=required");
         return;
     }
 
-    // Ambil pesanan user ini
     List<Map<String, Object>> pesananList = new ArrayList<>();
     try {
         Connection conn = Koneksi.getConnection();
@@ -35,121 +27,240 @@
             pesanan.put("jumlah_item", rs.getInt("jumlah_item"));
             pesananList.add(pesanan);
         }
-
-        rs.close();
-        ps.close();
-    } catch (Exception e) {
-        e.printStackTrace();
-    }
+        rs.close(); ps.close();
+    } catch (Exception e) { e.printStackTrace(); }
 %>
 <!DOCTYPE html>
 <html lang="id">
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Riwayat Pesanan - Beans & Brew</title>
-        <style>
-            * {
-                margin: 0;
-                padding: 0;
-                box-sizing: border-box;
-            }
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Orders - Beans & Brew</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;700&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        :root {
+            --primary: #2d1b14;
+            --accent: #d4a373;
+            --bg-body: #f8f9fa;
+            --white: #ffffff;
+            --text-main: #1a1a1a;
+            --text-muted: #718096;
+            --shadow: 0 10px 30px rgba(0,0,0,0.05);
+        }
 
-            body {
-                font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-                background: #f5f5f5;
-                color: #2c2c2c;
-            }
-        </style>
-    </head>
-    <body>
-        <%@ include file="navbar-component.jsp" %>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
 
-        <div style="margin-top: 90px; padding: 2rem 5%; max-width: 1200px; margin-left: auto; margin-right: auto;">
-            <h1 style="font-size: 2.5rem; color: #3e2723; margin-bottom: 2rem;">📋 Riwayat Pesanan</h1>
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: var(--bg-body);
+            color: var(--text-main);
+            line-height: 1.6;
+        }
 
-            <% if (pesananList.isEmpty()) { %>
-            <div style="background: white; border-radius: 15px; padding: 4rem; text-align: center; box-shadow: 0 3px 15px rgba(0,0,0,0.1);">
-                <div style="font-size: 4rem; margin-bottom: 1rem;">📭</div>
-                <h3 style="color: #666; margin-bottom: 1rem;">Belum ada pesanan</h3>
-                <p style="color: #999; margin-bottom: 2rem;">Mulai pesan kopi favoritmu sekarang!</p>
-                <a href="menu" style="display: inline-block; background: #ff6f00; color: white; padding: 1rem 2rem; border-radius: 50px; text-decoration: none; font-weight: bold;">Lihat Menu</a>
+        .container {
+            max-width: 1000px;
+            margin: 120px auto 60px;
+            padding: 0 20px;
+        }
+
+        .header-section {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 40px;
+        }
+
+        .header-section h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: 2.5rem;
+            color: var(--primary);
+        }
+
+        /* --- Empty State --- */
+        .empty-state {
+            background: var(--white);
+            border-radius: 24px;
+            padding: 80px 40px;
+            text-align: center;
+            box-shadow: var(--shadow);
+        }
+        .empty-state i { font-size: 4rem; color: var(--accent); opacity: 0.5; margin-bottom: 20px; }
+        .empty-state h3 { font-size: 1.5rem; margin-bottom: 10px; }
+        .btn-order {
+            display: inline-block;
+            background: var(--accent);
+            color: white;
+            padding: 14px 32px;
+            border-radius: 100px;
+            text-decoration: none;
+            font-weight: 700;
+            margin-top: 20px;
+            transition: 0.3s;
+        }
+        .btn-order:hover { transform: translateY(-3px); box-shadow: 0 10px 20px rgba(212,163,115,0.3); }
+
+        /* --- Order Card --- */
+        .order-card {
+            background: var(--white);
+            border-radius: 20px;
+            padding: 25px;
+            margin-bottom: 20px;
+            box-shadow: var(--shadow);
+            transition: 0.3s;
+            border: 1px solid transparent;
+        }
+        .order-card:hover { border-color: var(--accent); transform: translateY(-2px); }
+
+        .order-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-bottom: 20px;
+            border-bottom: 1px dashed #edf2f7;
+            margin-bottom: 20px;
+        }
+
+        .order-id { font-weight: 700; color: var(--primary); font-size: 1.1rem; }
+        .order-date { color: var(--text-muted); font-size: 0.85rem; }
+
+        .status-badge {
+            padding: 6px 16px;
+            border-radius: 100px;
+            font-size: 0.75rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        /* Status Colors */
+        .status-pending { background: #fffaf0; color: #d69e2e; }
+        .status-progress { background: #ebf8ff; color: #3182ce; }
+        .status-selesai { background: #f0fff4; color: #38a169; }
+        .status-batal { background: #fff5f5; color: #e53e3e; }
+
+        .order-details {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 20px;
+        }
+
+        .detail-item span {
+            display: block;
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            margin-bottom: 4px;
+        }
+        .detail-item p { font-weight: 600; color: var(--primary); }
+
+        .total-price { color: var(--accent) !important; font-size: 1.2rem !important; }
+
+        footer {
+            text-align: center;
+            padding: 40px;
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
+        @media (max-width: 768px) {
+            .header-section { flex-direction: column; align-items: flex-start; gap: 10px; }
+            .order-header { flex-direction: column; align-items: flex-start; gap: 10px; }
+            .status-badge { align-self: flex-start; }
+        }
+    </style>
+</head>
+<body>
+
+    <%@ include file="navbar-component.jsp" %>
+
+    <div class="container">
+        <div class="header-section">
+            <div>
+                <span style="color: var(--accent); font-weight: 700; text-transform: uppercase; font-size: 0.8rem; letter-spacing: 2px;">Dashboard</span>
+                <h1>Riwayat Pesanan</h1>
             </div>
-            <% } else { %>
-            <div style="display: grid; gap: 1.5rem;">
+            <div style="text-align: right;">
+                <p style="font-weight: 600;">Halo, <%= user.getNama() %>!</p>
+                <p style="font-size: 0.85rem; color: var(--text-muted);">Cek status kopimu di sini.</p>
+            </div>
+        </div>
+
+        <% if (pesananList.isEmpty()) { %>
+            <div class="empty-state">
+                <i class="fas fa-mug-hot"></i>
+                <h3>Belum Ada Pesanan</h3>
+                <p>Sepertinya kamu belum memesan apapun hari ini.</p>
+                <a href="menu" class="btn-order">Pesan Sekarang</a>
+            </div>
+        <% } else { %>
+            <div class="order-list">
                 <%
                     for (Map<String, Object> pesanan : pesananList) {
                         int id = (Integer) pesanan.get("id");
                         int total = (Integer) pesanan.get("total");
                         String metode = (String) pesanan.get("metode");
-                        String status = (String) pesanan.get("status");
+                        String status = (String) pesanan.get("status").toString().toLowerCase();
                         Timestamp tanggal = (Timestamp) pesanan.get("tanggal");
                         int jumlahItem = (Integer) pesanan.get("jumlah_item");
-
-                        String statusColor = "";
-                        String statusBg = "";
-                        if ("pending".equals(status)) {
-                            statusBg = "#fff3e0";
-                            statusColor = "#f57c00";
-                        } else if ("progress".equals(status)) {
-                            statusBg = "#e3f2fd";
-                            statusColor = "#1976d2";
-                        } else if ("selesai".equals(status)) {
-                            statusBg = "#e8f5e9";
-                            statusColor = "#388e3c";
-                        } else {
-                            statusBg = "#ffebee";
-                            statusColor = "#d32f2f";
-                        }
+                        
+                        // Format tanggal yang lebih cantik
+                        java.text.SimpleDateFormat sdf = new java.text.SimpleDateFormat("dd MMM yyyy, HH:mm");
+                        String formattedDate = sdf.format(tanggal);
                 %>
-                <div style="background: white; border-radius: 15px; padding: 2rem; box-shadow: 0 3px 15px rgba(0,0,0,0.1);">
-                    <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 1.5rem;">
+                <div class="order-card">
+                    <div class="order-header">
                         <div>
-                            <h3 style="font-size: 1.5rem; color: #3e2723; margin-bottom: 0.5rem;">Pesanan #<%= id%></h3>
-                            <p style="color: #999; font-size: 0.9rem;"><%= tanggal%></p>
+                            <p class="order-id">#ORD-<%= id %></p>
+                            <p class="order-date"><i class="far fa-calendar-alt" style="margin-right: 5px;"></i> <%= formattedDate %></p>
                         </div>
-                        <span style="background: <%= statusBg%>; color: <%= statusColor%>; padding: 0.5rem 1.5rem; border-radius: 50px; font-weight: bold; font-size: 0.9rem;">
-                            <%= status.toUpperCase()%>
+                        <span class="status-badge status-<%= status %>">
+                            <%= status %>
                         </span>
                     </div>
 
-                    <div style="border-top: 2px solid #f0f0f0; padding-top: 1rem; display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem;">
-                        <div>
-                            <p style="color: #999; font-size: 0.9rem; margin-bottom: 0.3rem;">Jumlah Item</p>
-                            <p style="font-weight: bold; font-size: 1.1rem;"><%= jumlahItem%> item</p>
+                    <div class="order-details">
+                        <div class="detail-item">
+                            <span>Jumlah Menu</span>
+                            <p><%= jumlahItem %> Item</p>
                         </div>
-                        <div>
-                            <p style="color: #999; font-size: 0.9rem; margin-bottom: 0.3rem;">Total Bayar</p>
-                            <p style="font-weight: bold; font-size: 1.3rem; color: #ff6f00;">Rp <%= String.format("%,d", total)%></p>
+                        <div class="detail-item">
+                            <span>Pembayaran</span>
+                            <p><%= metode %></p>
                         </div>
-                        <div>
-                            <p style="color: #999; font-size: 0.9rem; margin-bottom: 0.3rem;">Metode Pembayaran</p>
-                            <p style="font-weight: bold; font-size: 1.1rem;"><%= metode%></p>
+                        <div class="detail-item">
+                            <span>Total Tagihan</span>
+                            <p class="total-price">Rp <%= String.format("%,d", total) %></p>
+                        </div>
+                        <div class="detail-item" style="text-align: right;">
+                             <a href="detail-pesanan.jsp?id=<%= id %>" style="color: var(--accent); text-decoration: none; font-size: 0.9rem; font-weight: 700;">
+                                Lihat Detail <i class="fas fa-chevron-right" style="font-size: 0.7rem; margin-left: 5px;"></i>
+                             </a>
                         </div>
                     </div>
                 </div>
                 <% } %>
             </div>
-            <% }%>
-        </div>
+        <% } %>
+    </div>
 
-        <footer style="background: #3e2723; color: white; text-align: center; padding: 2rem; margin-top: 3rem;">
-            <p>&copy; 2024 Beans & Brew. All rights reserved. Made with ❤️ and ☕</p>
-        </footer>
+    <footer>
+        <p>&copy; 2024 Beans & Brew Coffee Roasters. All rights reserved.</p>
+    </footer>
 
-        <script>
-            function updateCartBadge() {
-                const cart = sessionStorage.getItem('cart');
-                const cartArray = cart ? JSON.parse(cart) : [];
-                const totalItems = cartArray.reduce((sum, item) => sum + item.quantity, 0);
-                const badge = document.getElementById('cartBadge');
-                if (badge) {
-                    badge.textContent = totalItems;
-                    badge.style.display = totalItems > 0 ? 'flex' : 'none';
-                }
+    <script>
+        // Update Cart Badge from previous logic
+        function updateCartBadge() {
+            const cart = sessionStorage.getItem('cart');
+            const cartArray = cart ? JSON.parse(cart) : [];
+            const totalItems = cartArray.reduce((sum, item) => sum + item.quantity, 0);
+            const badge = document.getElementById('cartBadge');
+            if (badge) {
+                badge.textContent = totalItems;
+                badge.style.display = totalItems > 0 ? 'flex' : 'none';
             }
-
-            document.addEventListener('DOMContentLoaded', updateCartBadge);
-        </script>
-    </body>
+        }
+        document.addEventListener('DOMContentLoaded', updateCartBadge);
+    </script>
+</body>
 </html>

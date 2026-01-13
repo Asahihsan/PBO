@@ -12,9 +12,9 @@ public class Koneksi {
         try {
             Class.forName("org.postgresql.Driver");
             return DriverManager.getConnection(
-                "jdbc:postgresql://localhost:5432/cafe_kopi",
+                "jdbc:postgresql://localhost:5432/dbkopi",
                 "postgres",
-                "121334"
+                "admin"
             );
         } catch (Exception e) {
             e.printStackTrace();
