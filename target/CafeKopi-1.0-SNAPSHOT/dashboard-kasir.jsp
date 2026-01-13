@@ -11,13 +11,17 @@
     try {
         Connection conn = Koneksi.getConnection();
         String query = "SELECT p.*, "
-                + "(SELECT COUNT(*) FROM detail_pesanan WHERE id_pesanan = p.id_pesanan) as jumlah_item, "
-                + "(SELECT STRING_AGG(DISTINCT k.nama_kategori, ', ') "
-                + " FROM detail_pesanan dp "
-                + " JOIN menu m ON dp.id_menu = m.id_menu "
-                + " JOIN kategori k ON dp.id_kategori = k.id_kategori "
-                + " WHERE dp.id_pesanan = p.id_pesanan) as kategori_list "
-                + "FROM pesanan p ORDER BY p.tanggal DESC";
+            + "(SELECT COUNT(*) FROM detail_pesanan WHERE id_pesanan = p.id_pesanan) as jumlah_item, "
+            + "(SELECT STRING_AGG(DISTINCT k.nama_kategori, ', ') "
+            + " FROM detail_pesanan dp "
+            + " JOIN menu m ON dp.id_menu = m.id_menu "
+            + " JOIN kategori k ON dp.id_kategori = k.id_kategori "
+            + " WHERE dp.id_pesanan = p.id_pesanan) as kategori_list, "
+            + "(SELECT STRING_AGG(m.nama_menu, ', ') "
+            + " FROM detail_pesanan dp "
+            + " JOIN menu m ON dp.id_menu = m.id_menu "
+            + " WHERE dp.id_pesanan = p.id_pesanan) as menu_list "
+            + "FROM pesanan p ORDER BY p.tanggal DESC";
         Statement stmt = conn.createStatement();
         ResultSet rs = stmt.executeQuery(query);
         while (rs.next()) {
@@ -29,7 +33,8 @@
             pesanan.put("metode", rs.getString("metode_pembayaran"));
             pesanan.put("status", rs.getString("status"));
             pesanan.put("tanggal", rs.getTimestamp("tanggal"));
-            pesanan.put("jumlah_item", rs.getInt("jumlah_item")); 
+            pesanan.put("jumlah_item", rs.getInt("jumlah_item"));
+            pesanan.put("menu_list", rs.getString("menu_list")); 
             pesanan.put("kategori", rs.getString("kategori_list"));
             pesananList.add(pesanan);
         }
@@ -87,6 +92,48 @@
 
         .top-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 2.5rem; }
         .user-profile { display: flex; align-items: center; gap: 15px; background: white; padding: 8px 20px; border-radius: 50px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); }
+
+        .tooltip-container {
+            position: relative;
+            display: inline-block;
+            cursor: pointer;
+        }
+
+        .tooltip-box {
+            visibility: hidden;
+            opacity: 0;
+            width: 220px;
+            background: #1e293b;
+            color: #fff;
+            text-align: left;
+            border-radius: 8px;
+            padding: 10px 12px;
+            position: absolute;
+            z-index: 99;
+            bottom: 120%;
+            left: 50%;
+            transform: translateX(-50%);
+            transition: 0.2s;
+            font-size: 0.75rem;
+            line-height: 1.4;
+            box-shadow: 0 10px 15px rgba(0,0,0,0.2);
+        }
+
+        .tooltip-box::after {
+            content: "";
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            border-width: 6px;
+            border-style: solid;
+            border-color: #1e293b transparent transparent transparent;
+        }
+
+        .tooltip-container:hover .tooltip-box {
+            visibility: visible;
+            opacity: 1;
+        }
 
         /* Stats Section */
         .stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1.5rem; margin-bottom: 2.5rem; }
@@ -219,8 +266,20 @@
                             <div style="font-size: 0.75rem; color: #94a3b8;"><%= p.get("telp") %></div>
                         </td>
                         <td>
-                            <span style="font-size: 0.8rem;"><%= p.get("jumlah_item") %> item</span>
-                            <div style="font-size: 0.7rem; color: #64748b;"><%= p.get("kategori") != null ? p.get("kategori") : "-" %></div>
+                            <div class="tooltip-container">
+                                <span style="font-size: 0.8rem; font-weight: 600;">
+                                    <%= p.get("jumlah_item") %> item
+                                </span>
+                                <div style="font-size: 0.7rem; color: #64748b;">
+                                    <%= p.get("kategori") != null ? p.get("kategori") : "-" %>
+                                </div>
+
+                                <!-- TOOLTIP -->
+                                <div class="tooltip-box">
+                                    <strong>Daftar Menu:</strong><br>
+                                    <%= p.get("menu_list") != null ? p.get("menu_list") : "Tidak ada data" %>
+                                </div>
+                            </div>
                         </td>
                         <td style="font-weight: 600;">Rp <%= String.format("%,d", p.get("total")) %></td>
                         <td><span style="font-size: 0.8rem; color: #64748b;"><i class="fas fa-credit-card"></i> <%= p.get("metode") %></span></td>
